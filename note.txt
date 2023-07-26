@@ -1,0 +1,24 @@
+Package installed
+Node Verson : v18.16.0
+
+NPM Version : 9.5.1
+
+angular vesion :
+Angular CLI: 16.0.3
+
+
+
+Home  »  Angular   »   Angular 16 Google Social Login or Signin Tutorial
+Angular 16 Google Social Login or Signin Tutorial
+Last updated on: May 16, 2023 by Digaamber Rawat
+
+
+===============================
+https://www.positronx.io/angular-google-social-login-tutorial-with-example/
+
+
+https://stackblitz.com/edit/angular-8-registration-login-example?file=app%2Fregister%2Fregister.component.html
+
+
+https://www.bezkoder.com/angular-node-express-postgresql/
+
