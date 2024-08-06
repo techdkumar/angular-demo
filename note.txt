@@ -22,3 +22,212 @@ https://stackblitz.com/edit/angular-8-registration-login-example?file=app%2Fregi
 
 https://www.bezkoder.com/angular-node-express-postgresql/
 
+
+
+
+==============================================================================================================
+Email verification in php
+============================
+
+
+
+
+config.php
+---------------
+
+<?php
+    date_default_timezone_set('Asia/Kolkata');
+    error_reporting( error_reporting() & ~E_NOTICE );
+    global $dbhost;
+    global $dbuser;
+    global $dbpass;
+    global $dbname1;
+    global $dbname2;
+    global $conn;
+    
+    $dbhost = 'localhost';
+    $dbuser = 'root';
+    $dbpass = '';
+    $dbname = 'rnd';
+	
+    $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+    if(!$conn){
+        die("Connection error: " . mysqli_connect_error());
+    }
+	error_reporting(0);
+ 
+
+================================
+
+registration.html
+-----------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    <form action="register.php" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit" name="btnsubmit">Register</button>
+    </form>
+</body>
+</html>
+
+========================
+register.php
+------------
+
+<?php
+error_reporting(0);
+require('config.php');
+if(isset($_POST['btnsubmit'])){
+	$username = $_POST['username'];
+	$email = $_POST['email'];
+	$pass = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $token = bin2hex(random_bytes(50)); // Generate a random token
+	$sql = "INSERT INTO tbl_user (username, email, password, token) VALUES ('$user', '$email', '$pass', '$token')";
+	$data = mysqli_query($conn,$sql);
+	 if($data > 0){
+		$to = $email;
+		$subject = "Email Verification";
+			
+		$message = "Please click on the link below to verify your email address:
+        http://localhost/PHPMAILER-QUERY-USING-PHP/verify.php?token=$token";
+        $headers = "From: no-reply@yourdomain.com";
+		//echo $to.$subject.$message.$headers;
+		if (mail($to, $subject, $message, $headers)) {
+            echo "Registration successful! Please check your email to verify your account.";
+        } else {
+            echo "Failed to send verification email.";
+        } 
+		
+	 }else{
+		echo "Error: " . $sql . "<br>" . $conn->error;
+	 }
+}
+
+?>
+
+===========================
+
+verify.php
+==========
+<?php
+ob_start();
+error_reporting(0);
+require('config.php');
+
+if (isset($_GET['token'])) {
+    $token = $_GET['token'];
+
+    // Verify the user by setting is_verified to 1
+    $sql = "UPDATE tbl_user SET is_verified = 1 WHERE token = '$token'";
+
+    if (mysqli_query($conn,$sql) === TRUE) {
+        echo "Email verified successfully! You can now log in.";
+    } else {
+        echo "Invalid verification link or token.";
+    }
+}
+
+
+
+
+?>
+
+==================
+
+table-user
+
+===================
+
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Aug 05, 2024 at 07:24 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `rnd`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_user`
+--
+
+CREATE TABLE `tbl_user` (
+  `id` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `is_verified` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `status` int(2) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `tbl_user`
+--
+ALTER TABLE `tbl_user`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `tbl_user`
+--
+ALTER TABLE `tbl_user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;
+
+
+
+
+
+$response['msg'] = $msg;
+if($is_success)
+{
+	
+	$response['userid'] = (string)$userid;
+	$response['name'] = (string)$name;
+	$response['email'] = (string)$email;
+	$response['city'] = $city;
+	$response['desc'] = (string)$desc;
+	
+}
+echo json_encode($response);
+
+
